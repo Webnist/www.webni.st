@@ -1,0 +1,33 @@
+name: "Task"
+description: "実装・調査・調整などの作業用 Issue"
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 概要
+      description: 何をするIssueか
+      placeholder: 例）Header コンポーネントを作成する
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: 作業内容
+      value: |
+        - [ ] 実装
+        - [ ] 表示確認
+        - [ ] 軽いリファクタ
+    validations:
+      required: true
+
+  - type: textarea
+    id: docs
+    attributes:
+      label: 参考リンク
+      placeholder: |
+        https://nextjs.org/docs/app/...
+    validations:
+      required: false

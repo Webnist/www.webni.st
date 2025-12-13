@@ -1,0 +1,49 @@
+name: "Phase Task"
+description: "webni.st 制作フェーズ用 Issue"
+title: "[Phase] "
+labels: ["phase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 目的
+        このフェーズで達成したいことを簡潔に書く。
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: ゴール
+      description: このIssueがクローズされた状態を一文で。
+      placeholder: 例）Next.jsプロジェクトがローカルで起動する
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: やること
+      description: チェックリスト形式で記載
+      value: |
+        - [ ] タスク1
+        - [ ] タスク2
+        - [ ] タスク3
+    validations:
+      required: true
+
+  - type: textarea
+    id: docs
+    attributes:
+      label: 参考リンク（Next.js Docs）
+      description: 該当する公式ドキュメント
+      placeholder: |
+        https://nextjs.org/docs/app/...
+    validations:
+      required: false
+
+  - type: textarea
+    id: memo
+    attributes:
+      label: メモ
+      description: 実装時の注意点や判断理由など
+    validations:
+      required: false
