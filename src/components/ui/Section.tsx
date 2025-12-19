@@ -7,7 +7,7 @@ export interface SectionProps extends HTMLAttributes<HTMLElement> {
   fullWidth?: boolean;
 }
 
-const variantStyles: Record<SectionProps['variant'], string> = {
+const variantStyles: Record<NonNullable<SectionProps['variant']>, string> = {
   default: '',
   glass: 'glass rounded-2xl',
   dark: 'bg-slate-900/50',
@@ -47,7 +47,7 @@ export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
 }
 
-const containerSizes: Record<ContainerProps['size'], string> = {
+const containerSizes: Record<NonNullable<ContainerProps['size']>, string> = {
   sm: 'max-w-2xl',
   md: 'max-w-4xl',
   lg: 'max-w-5xl',
@@ -74,4 +74,3 @@ export function Container({
     </div>
   );
 }
-

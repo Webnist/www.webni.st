@@ -7,7 +7,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hover?: boolean;
 }
 
-const variantStyles: Record<CardProps['variant'], string> = {
+const variantStyles: Record<NonNullable<CardProps['variant']>, string> = {
   default: 'bg-slate-800/50 border-slate-700',
   glass: 'glass',
   outline: 'border-2 border-slate-600 bg-transparent',
@@ -113,4 +113,3 @@ export function CardFooter({
     </div>
   );
 }
-
