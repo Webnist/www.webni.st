@@ -1,30 +1,65 @@
-import Link from 'next/link';
+import { getMenu } from '@/lib/menu';
+import { getSiteSettings } from '@/lib/site';
+import { ENV } from '@/lib/env';
+import { FooterNav } from './FooterNav';
+import { FooterLogo } from './FooterLogo';
+import type { MenuItem } from '@/types/menu';
 
-export function Footer() {
+/**
+ * フッター（サーバーコンポーネント）
+ * @returns フッター
+ */
+export async function Footer() {
   const year = new Date().getFullYear();
+  let menuItems: MenuItem[] = [];
+  let logo: { icon?: string } | undefined;
+
+  try {
+    const [menuResponse, siteResponse] = await Promise.all([
+      getMenu({
+        siteId: ENV.WP_SITE_ID,
+        area: 'footer',
+      }),
+      getSiteSettings(ENV.WP_SITE_ID),
+    ]);
+    menuItems = menuResponse.items || [];
+
+    // ロゴ情報を取得
+    if (siteResponse.settings.logo?.url) {
+      logo = {
+        icon: siteResponse.settings.logo.url,
+      };
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[Footer] Logo URL:', siteResponse.settings.logo.url);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch footer data:', error);
+    // エラーが発生してもフッターは表示する（メニューなし、ロゴなし）
+  }
 
   return (
-    <footer className="mt-16 border-t border-slate-800/80">
-      <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="mt-16 border-t border-slate-800/80 bg-slate-950/50">
+      <div className="mx-auto max-w-[1240px] px-6 py-12">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          {/* ロゴ */}
           <div>
-            <p className="text-sm font-semibold text-slate-100">webni.st</p>
-            <p className="mt-1 text-xs text-slate-400">
-              © {year} Webnist. Built with Next.js.
-            </p>
+            <FooterLogo logo={logo} />
           </div>
 
-          <div className="flex gap-4 text-sm">
-            <Link className="text-slate-300 hover:text-orange-300 underline-offset-4 hover:underline" href="/blog">
-              Blog
-            </Link>
-            <Link className="text-slate-300 hover:text-orange-300 underline-offset-4 hover:underline" href="/works">
-              Works
-            </Link>
-            <Link className="text-slate-300 hover:text-orange-300 underline-offset-4 hover:underline" href="/about">
-              About
-            </Link>
-          </div>
+          {/* フッターメニュー */}
+          {menuItems.length > 0 && (
+            <div className="md:flex md:items-start">
+              <FooterNav items={menuItems} />
+            </div>
+          )}
+        </div>
+
+        {/* コピーライト */}
+        <div className="mt-8 pt-8 border-t border-slate-800/80">
+          <p className="text-xs text-slate-400 text-center md:text-left">
+            © {year} Webnist. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

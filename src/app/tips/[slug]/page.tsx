@@ -1,15 +1,35 @@
+import { notFound } from 'next/navigation';
+import { getPostBySlug } from '@/lib/blog';
+
+/**
+ * Tips 詳細ページ
+ * @param params - パラメータ
+ * @returns Tips 詳細ページ
+ */
 export default async function BlogTipsPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const post = await getPostBySlug(slug);
+  if (!post) notFound();
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
-      <h1 className="text-3xl font-bold">Blog / tips / Post</h1>
-      <p className="mt-2 text-slate-200">Blog / tips / Post / slug: {slug}</p>
-      <p className="mt-6 text-slate-300">ここに記事本文（後で）</p>
+    <main>
+      <p className="text-xs text-slate-400">
+        {new Date(post.date).toLocaleDateString('ja-JP')}
+      </p>
+
+      <h1
+        className="mt-2 text-3xl font-bold"
+        dangerouslySetInnerHTML={{ __html: post.title }}
+      />
+
+      <article
+        className="prose prose-invert mt-8 max-w-none"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
     </main>
   );
 }

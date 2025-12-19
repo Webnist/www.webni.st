@@ -1,15 +1,35 @@
+import { notFound } from 'next/navigation'; // Next.js の notFound 関数をインポート
+import { getPostBySlug } from '@/lib/blog'; // ブログ投稿をスラッグで取得する関数
+
+/**
+ * Blog 詳細ページ
+ * @param params - パラメータ
+ * @returns Blog 詳細ページ
+ */
 export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const post = await getPostBySlug(slug);
+  if (!post) notFound();
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
-      <h1 className="text-3xl font-bold">Blog Post</h1>
-      <p className="mt-2 text-slate-200">slug: {slug}</p>
-      <p className="mt-6 text-slate-300">ここに記事本文（後で）</p>
+    <main>
+      <p className="text-xs text-slate-400">
+        {new Date(post.date).toLocaleDateString('ja-JP')}
+      </p>
+
+      <h1
+        className="mt-2 text-3xl font-bold"
+        dangerouslySetInnerHTML={{ __html: post.title }}
+      />
+
+      <article
+        className="prose prose-invert mt-8 max-w-none"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
     </main>
   );
 }

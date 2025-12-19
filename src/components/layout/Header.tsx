@@ -1,33 +1,48 @@
-import Link from 'next/link';
+import { getMenu } from '@/lib/menu';
+import { getSiteSettings } from '@/lib/site';
+import { ENV } from '@/lib/env';
+import { HeaderNav } from './HeaderNav';
+import { HeaderLogo } from './HeaderLogo';
+import type { MenuItem } from '@/types/menu';
 
-const navItems = [
-  { href: '/blog', label: 'Blog' },
-  { href: '/works', label: 'Works' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
-] as const;
+/**
+ * ヘッダー（サーバーコンポーネント）
+ * @returns ヘッダー
+ */
+export async function Header() {
+  let menuItems: MenuItem[] = [];
+  let logo: { icon?: string } | undefined;
 
-export function Header() {
+  try {
+    const [menuResponse, siteResponse] = await Promise.all([
+      getMenu({
+        siteId: ENV.WP_SITE_ID,
+        area: 'header',
+      }),
+      getSiteSettings(ENV.WP_SITE_ID),
+    ]);
+    menuItems = menuResponse.items || [];
+
+    // ロゴ情報を取得
+    if (siteResponse.settings.logo?.url) {
+      logo = {
+        icon: siteResponse.settings.logo.url,
+      };
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[Header] Logo URL:', siteResponse.settings.logo.url);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch header data:', error);
+    // エラーが発生してもヘッダーは表示する（メニューなし、ロゴなし）
+  }
+
   return (
-    <header className="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-baseline gap-2">
-          <span className="text-base font-bold tracking-wide text-orange-400">
-            webni.st
-          </span>
-          <span className="text-xs text-slate-400">by Webnist</span>
-        </Link>
-
-        <nav className="flex items-center gap-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-slate-200 hover:text-orange-300 hover:underline underline-offset-4"
-            >
-              {item.label}
-            </Link>
-          ))}
+    <header className="fixed top-0 left-0 right-0 z-50 glass-surface" id="main-header">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <nav className="flex items-center justify-between">
+          <HeaderLogo logo={logo} />
+          <HeaderNav items={menuItems} />
         </nav>
       </div>
     </header>
